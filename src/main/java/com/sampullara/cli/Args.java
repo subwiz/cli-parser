@@ -214,12 +214,23 @@ public class Args {
      */
     public static void usage(PrintStream errStream, Object target) {
         Class<?> clazz;
+        String name = null;
         if (target instanceof Class) {
             clazz = (Class) target;
         } else {
             clazz = target.getClass();
         }
-        errStream.println("Usage: " + clazz.getName());
+        
+        // Compute name:
+        Program p = clazz.getAnnotation(Program.class);
+        if(p != null && p.name() != null) {
+            name = p.name();
+        }
+        else {
+            name = clazz.getName();
+        }
+        
+        errStream.println("Usage: " + name);
         for (Class<?> currentClazz = clazz; currentClazz != null; currentClazz = currentClazz.getSuperclass()) {
             for (Field field : currentClazz.getDeclaredFields()) {
                 fieldUsage(errStream, target, field);
